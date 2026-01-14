@@ -1,115 +1,146 @@
-/* 1. 强制声明：禁止浏览器反转颜色 */
-:root {
-    color-scheme: light !important;
-}
-
+/* 全局重置 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* 定义全局变量 */
+:root {
+    --bg-gradient: linear-gradient(135deg, #FFB6A3 0%, #FFA07A 50%, #FF8C69 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-main: #333;
+    --primary-brown: #8B4513;
+    --title-orange: #D2691E;
+}
+
+/* 强制适配黑暗模式：防止系统将背景强制转为黑色 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: var(--bg-gradient) !important;
+    }
+}
+
 body {
-    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    /* 强制橙色渐变，防止黑暗模式变黑 */
-    background: linear-gradient(135deg, #FFB6A3 0%, #FFA07A 50%, #FF8C69 100%) !important;
-    background-attachment: fixed !important;
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background: var(--bg-gradient);
     min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* 防止点击产生滚动条 */
-}
-
-/* 强制所有文字在黑暗模式下不反白 */
-@media (prefers-color-scheme: dark) {
-    body { background: linear-gradient(135deg, #FFB6A3 0%, #FFA07A 50%, #FF8C69 100%) !important; }
-    .greeting { background: rgba(255, 255, 255, 0.95) !important; }
-    .greeting p, .logo, .logo-subtitle { color: #333 !important; }
 }
 
 .container {
     text-align: center;
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    z-index: 5; /* 降低容器层级，确保特效在上面 */
+    padding: 20px;
+    width: 100%;
+    max-width: 500px; /* 适配手机显示宽度 */
+    z-index: 10;
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in 1.5s forwards;
 }
 
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* 响应式 Logo 大小 */
 .logo-image {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 10px;
+    width: 35vw;
+    height: 35vw;
+    max-width: 150px;
+    max-height: 150px;
+    margin: 0 auto 15px;
+    animation: float 3s ease-in-out infinite;
 }
 
 .logo-image img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    /* 增加亮度并添加柔和阴影，确保 Logo 在深色背景下也好看 */
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)) brightness(1.1);
 }
 
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* 响应式标题字体 */
 .logo {
-    font-size: 1.8rem;
-    color: #8B4513 !important;
-    margin-bottom: 2px;
+    font-size: clamp(2rem, 8vw, 2.8rem);
+    font-weight: bold;
+    color: var(--primary-brown);
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    margin-bottom: 5px;
 }
 
 .logo-subtitle {
-    font-size: 1rem;
-    color: #654321 !important;
+    font-size: clamp(1rem, 4vw, 1.5rem);
+    font-weight: 600;
+    color: #654321;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+/* 祝福语卡片适配 */
+.greeting {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 30px 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    margin: 0 10px;
+    border: 3px solid #FFB6A3;
+}
+
+.greeting h1 {
+    color: var(--title-orange);
+    font-size: clamp(1.5rem, 6vw, 2.2rem);
     margin-bottom: 15px;
 }
 
-.greeting {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 15px;
-    padding: 20px 10px;
-    border: 2px solid #FFB6A3;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-}
-
-/* 解决“新年快乐”在一行的问题 */
-.greeting h1 {
-    color: #D2691E !important;
-    font-size: 7vw !important; /* 动态缩放 */
-    white-space: nowrap !important; /* 强制不换行 */
-    margin-bottom: 10px;
-    display: block;
-    width: 100%;
-}
-
-@media (min-width: 400px) {
-    .greeting h1 { font-size: 1.6rem !important; }
-}
-
 .greeting p {
-    color: #444 !important;
-    font-size: 1rem;
+    color: var(--text-main);
+    font-size: clamp(1rem, 4vw, 1.2rem);
     line-height: 1.6;
-}
-
-/* 核心：修复特效不显示的问题 */
-.coin, .big-coin, .particle {
-    position: fixed !important; /* 必须是 fixed */
-    pointer-events: none; /* 防止特效阻挡点击 */
-    z-index: 9999 !important; /* 确保在最顶层 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.coin {
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
+    margin: 10px 0;
 }
 
 .blessing {
-    color: #8B4513 !important;
+    color: var(--primary-brown);
     font-weight: bold;
-    padding: 10px;
-    margin-top: 15px;
-    background: linear-gradient(135deg, #FFDAB9 0%, #FFB6A3 100%) !important;
-    border-radius: 8px;
+    font-size: clamp(1rem, 4.5vw, 1.4rem);
+    margin-top: 20px;
+    padding: 12px;
+    background: linear-gradient(135deg, #FFDAB9 0%, #FFB6A3 100%);
+    border-radius: 10px;
+}
+
+/* 优化特效元素大小 */
+.coin {
+    position: fixed;
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    z-index: 100;
+}
+
+.big-coin {
+    position: fixed;
+    width: 90px;
+    height: 90px;
+    font-size: 40px;
+    z-index: 150;
+}
+
+.particle {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: #FFB6A3;
+    border-radius: 50%;
+    z-index: 90;
 }
