@@ -15,16 +15,20 @@
 /* 强制关闭系统的自动深色模式反转，确保色调温馨 */
 @media (prefers-color-scheme: dark) {
     body {
-        background: var(--bg-gradient) !important;
+        background: var(--bg-color);
+    }
+    .greeting {
+        background: var(--card-bg);
+    }
+    .greeting p, .logo, .logo-subtitle {
+        color: inherit !important;
     }
 }
-
 body {
     font-family: 'Microsoft YaHei', Arial, sans-serif;
     background: linear-gradient(135deg, #FFB6A3 0%, #FFA07A 50%, #FF8C69 100%);
     min-height: 100vh;
     overflow-x: hidden;
-    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,7 +38,7 @@ body {
     text-align: center;
     padding: 20px;
     width: 100%;
-    max-width: 500px;
+    max-width: 450px;
     z-index: 10;
     opacity: 0;
     animation: fadeIn 0.5s ease-in 1.5s forwards;
@@ -237,6 +241,7 @@ body {
     }
 
 }
+
 
 
 
