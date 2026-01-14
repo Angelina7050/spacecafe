@@ -102,17 +102,15 @@ body {
 }
 
 .greeting h1 {
-    color: #D2691E;
-    font-size: 2.5em;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    color: #D2691E !important;
+    font-size: clamp(1.2rem, 7vw, 2.2rem) !important; 
+    white-space: nowrap !important; 
+    margin-bottom: 15px;
 }
 
 .greeting p {
-    color: #333;
-    font-size: 1.3em;
-    line-height: 1.8;
-    margin: 15px 0;
+    color: #333 !important;
+    line-height: 1.6;
 }
 
 .blessing {
@@ -232,4 +230,5 @@ body {
         transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
         opacity: 0;
     }
+
 }
