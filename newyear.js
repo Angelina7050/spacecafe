@@ -1,130 +1,103 @@
-const centerX = window.innerWidth / 2;
-const centerY = window.innerHeight / 2;
+/**
+ * 优化版新年特效 JS
+ * 修复了坐标定位偏移和字符堆叠问题
+ */
 
-// 创建闪光效果
+// 1. 动态获取当前窗口中心点，确保在手机和电脑上都能居中爆炸
+const getCenter = () => {
+    return {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2
+    };
+};
+
+// 2. 创建背景闪光特效
 function createFlash() {
     const flash = document.createElement('div');
     flash.className = 'flash';
     document.body.appendChild(flash);
+    // 动画结束后移除元素，释放内存
     setTimeout(() => flash.remove(), 800);
 }
 
-// 创建爆炸金币
-function createExplodingCoin(delay, isBig = false) {
-    setTimeout(() => {
-        const coin = document.createElement('div');
-        coin.className = isBig ? 'big-coin' : 'coin';
-        coin.textContent = '¥';
-        
-        const angle = Math.random() * Math.PI * 2;
-        const distance = isBig ? 300 + Math.random() * 400 : 200 + Math.random() * 500;
-        const tx = Math.cos(angle) * distance;
-        const ty = Math.sin(angle) * distance;
-        
-        coin.style.left = centerX + 'px';
-        coin.style.top = centerY + 'px';
-        coin.style.setProperty('--tx', tx + 'px');
-        coin.style.setProperty('--ty', ty + 'px');
-        coin.style.animationDuration = (1.5 + Math.random() * 1) + 's';
-        
-        document.body.appendChild(coin);
-        setTimeout(() => coin.remove(), 3000);
-    }, delay);
+// 3. 创建爆炸金币的核心函数
+function createCoin(isBig = false, startX, startY) {
+    const coin = document.createElement('div');
+    coin.className = isBig ? 'big-coin' : 'coin';
+    coin.textContent = '¥';
+    
+    // 如果没有传入点击坐标，则默认从屏幕中心发射
+    const originX = startX || getCenter().x;
+    const originY = startY || getCenter().y;
+    
+    // 计算随机爆炸角度和距离
+    const angle = Math.random() * Math.PI * 2; // 360度随机方向
+    const distance = isBig ? (250 + Math.random() * 250) : (150 + Math.random() * 300);
+    
+    // 设置初始位置
+    coin.style.left = originX + 'px';
+    coin.style.top = originY + 'px';
+    
+    // 通过 CSS 变量传递爆炸终点坐标
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance;
+    coin.style.setProperty('--tx', `${tx}px`);
+    coin.style.setProperty('--ty', `${ty}px`);
+    
+    // 随机动画时长，增加生动感
+    const duration = isBig ? (1.5 + Math.random()) : (1 + Math.random());
+    coin.style.animationDuration = `${duration}s`;
+    
+    document.body.appendChild(coin);
+    
+    // 动画播放完后准时清理
+    setTimeout(() => coin.remove(), duration * 1000);
 }
 
-// 创建粒子效果
-function createParticles(count, delay) {
-    setTimeout(() => {
-        for (let i = 0; i < count; i++) {
-            setTimeout(() => {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 100 + Math.random() * 300;
-                const tx = Math.cos(angle) * distance;
-                const ty = Math.sin(angle) * distance;
-                
-                particle.style.left = centerX + 'px';
-                particle.style.top = centerY + 'px';
-                particle.style.setProperty('--tx', tx + 'px');
-                particle.style.setProperty('--ty', ty + 'px');
-                particle.style.animationDuration = (0.8 + Math.random() * 0.5) + 's';
-                
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 1500);
-            }, i * 10);
-        }
-    }, delay);
-}
-
-// 页面加载时的爆炸效果
+// 4. 页面加载完成后的自动特效
 window.addEventListener('load', () => {
-    // 第一波闪光
+    // 触发闪光
     createFlash();
     
-    // 第一波大爆炸 - 10个大金币
-    for (let i = 0; i < 10; i++) {
-        createExplodingCoin(i * 50, true);
+    // 连环爆炸效果：分批次发射金币
+    // 第一波：5个大金币
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => createCoin(true), i * 100);
     }
     
-    // 第一波粒子
-    createParticles(50, 0);
-    
-    // 第二波爆炸 - 30个普通金币
-    for (let i = 0; i < 30; i++) {
-        createExplodingCoin(200 + i * 30, false);
+    // 第二波：20个小金币
+    for (let i = 0; i < 20; i++) {
+        setTimeout(() => createCoin(false), 300 + (i * 50));
     }
     
-    // 第二波闪光和粒子
-    setTimeout(() => {
-        createFlash();
-        createParticles(40, 0);
-    }, 400);
-    
-    // 第三波爆炸 - 40个金币
-    for (let i = 0; i < 40; i++) {
-        createExplodingCoin(800 + i * 25, false);
-    }
-    
-    // 第三波粒子
-    createParticles(60, 1000);
-    
-    // 持续的金币效果
+    // 持续性零星金币（前5秒）
     let count = 0;
     const interval = setInterval(() => {
-        createExplodingCoin(0, Math.random() > 0.7);
+        createCoin(Math.random() > 0.8);
         count++;
-        if (count > 50) clearInterval(interval);
-    }, 150);
+        if (count > 30) clearInterval(interval);
+    }, 200);
 });
 
-// 点击屏幕继续爆金币
-document.addEventListener('click', (e) => {
-    // 避免按钮点击时触发
+// 5. 交互效果：点击屏幕任何地方都会在该处爆出金币
+document.addEventListener('mousedown', (e) => {
+    // 如果点击的是按钮等交互元素，可以视情况跳过
     if (e.target.tagName === 'BUTTON') return;
     
-    for (let i = 0; i < 15; i++) {
+    // 每次点击爆出 6-8 个金币
+    const burstCount = 6 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < burstCount; i++) {
         setTimeout(() => {
-            const coin = document.createElement('div');
-            coin.className = Math.random() > 0.8 ? 'big-coin' : 'coin';
-            coin.textContent = '¥';
-            
-            const angle = Math.random() * Math.PI * 2;
-            const distance = 150 + Math.random() * 300;
-            const tx = Math.cos(angle) * distance;
-            const ty = Math.sin(angle) * distance;
-            
-            coin.style.left = e.clientX + 'px';
-            coin.style.top = e.clientY + 'px';
-            coin.style.setProperty('--tx', tx + 'px');
-            coin.style.setProperty('--ty', ty + 'px');
-            coin.style.animationDuration = (1.2 + Math.random() * 0.8) + 's';
-            
-            document.body.appendChild(coin);
-            setTimeout(() => coin.remove(), 2500);
-        }, i * 40);
+            createCoin(Math.random() > 0.9, e.clientX, e.clientY);
+        }, i * 30);
     }
-    createParticles(30, 0);
 });
 
+// 针对触摸屏的兼容
+document.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    const burstCount = 5;
+    for (let i = 0; i < burstCount; i++) {
+        createCoin(false, touch.clientX, touch.clientY);
+    }
+}, { passive: true });
