@@ -126,10 +126,9 @@ body {
 .blessing {
     color: #8B4513 !important;
     font-weight: bold;
-    font-size: 1.1rem;
-    margin-top: 15px;
     padding: 10px;
-    background: linear-gradient(135deg, #FFDAB9 0%, #FFB6A3 100%);
+    margin-top: 15px;
+    background: linear-gradient(135deg, #FFDAB9 0%, #FFB6A3 100%) !important;
     border-radius: 10px;
 }
 .coin {
@@ -241,6 +240,7 @@ body {
     }
 
 }
+
 
 
 
